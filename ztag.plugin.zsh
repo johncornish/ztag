@@ -17,7 +17,7 @@ tag() {
 	fpath=$(readlink -f $file)
 	tag_dir=$ZTAG_ROOT/tags/$tag_name
 	mkdir -p $tag_dir
-	if ! ln -s $fpath $tag_dir; then
+	if ! ln -s $fpath $tag_dir 2> /dev/null; then
 	   echo "$(basename $fpath) already exists at $tag_dir"
 	fi
     fi
