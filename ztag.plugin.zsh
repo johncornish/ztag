@@ -17,14 +17,18 @@ tag() {
 	fpath=$(readlink -f $file)
 	tag_dir=$ZTAG_ROOT/tags/$tag_name
 	mkdir -p $tag_dir
-	ln -sf $fpath $tag_dir
+	if ! ln -s $fpath $tag_dir; then
+	   echo "$(basename $fpath) already exists at $tag_dir"
+	fi
     fi
 }
 
 tagsm() {
-    ztag_setup()
+    ztag_setup
+
     tag_name=$1
     files=( ${@:2} )
+
     for f in $files;
     do
 	tag $tag_name $f
@@ -32,10 +36,12 @@ tagsm() {
 }
 
 tagms() {
-    ztag_setup()
+    ztag_setup
+
     length=$#
     tags=( ${@:1:$length-1} )
     file=${@:$#}
+
     for t in $tags;
     do
 	tag $t $file
