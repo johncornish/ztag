@@ -11,13 +11,12 @@ ztag_setup() {
 }
 
 tag() {
-    tag_name=$1
-    file=$2
     if [ "$#" -eq 2 ]; then
-	fpath=$(readlink -f $file)
+	typeset tag_name=$1 filename=$2 filepath tag_dir
+	filepath=$(readlink -f $filename)
 	tag_dir=$ZTAG_ROOT/tags/$tag_name
 	mkdir -p $tag_dir
-	if ! ln -s $fpath $tag_dir 2> /dev/null; then
+	if ! ln -s $filepath $tag_dir 2> /dev/null; then
 	   echo "$(basename $fpath) already exists at $tag_dir"
 	fi
     fi
@@ -26,8 +25,7 @@ tag() {
 tagsm() {
     ztag_setup
 
-    tag_name=$1
-    files=( ${@:2} )
+    typeset tag_name=$1 files=( ${@:2} )
 
     for f in $files;
     do
@@ -38,26 +36,24 @@ tagsm() {
 tagms() {
     ztag_setup
 
-    length=$#
+    typeset length=$# tags filename=${@:$#}
     tags=( ${@:1:$length-1} )
-    file=${@:$#}
 
     for t in $tags;
     do
-	tag $t $file
+	tag $t $filename
     done
 }
 
 tagls() {
-    tags=( $@ )
-    links=()
+    typeset tags=( $@ ) links=() files=() this_tag this_link
+
     for t in $tags;
     do
 	this_tag=($(find $ZTAG_ROOT/tags/$t -type l))
 	links=($links $this_tag)
     done
 
-    files=()
     for l in $links;
     do
 	this_link=$(readlink -f $l)
